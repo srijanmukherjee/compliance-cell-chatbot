@@ -1,8 +1,11 @@
 {
-    "editor.tabFocusMode": false,
-    "editor.tabSize": 4,
-    "editor.insertSpaces": false,
-    "editor.formatOnSave": true,
-    "editor.detectIndentation": false,
-	"editor.defaultFormatter": "esbenp.prettier-vscode"
+	"editor.tabFocusMode": false,
+	"editor.tabSize": 4,
+	"editor.insertSpaces": false,
+	"editor.formatOnSave": true,
+	"editor.detectIndentation": false,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"files.associations": {
+		"*.css": "postcss"
+	}
 }

@@ -1,21 +1,17 @@
+import { Navigate, Route, Router, Routes } from "@solidjs/router";
 import type { Component } from "solid-js";
-
-import logo from "./logo.svg";
-import styles from "./App.module.css";
+import LoginPage from "./pages/login/LoginPage";
+import NotFoundPage from "./pages/errors/NotFoundPage";
 
 const App: Component = () => {
 	return (
-		<div class={styles.App}>
-			<header class={styles.header}>
-				<img src={logo} class={styles.logo} alt='logo' />
-				<p>
-					Edit <code>src/App.tsx</code> and save to reload.
-				</p>
-				<a class={styles.link} href='https://github.com/solidjs/solid' target='_blank' rel='noopener noreferrer'>
-					Learn Solid
-				</a>
-			</header>
-		</div>
+		<Router>
+			<Routes>
+				<Route path='/' element={<Navigate href='/chat' />} />
+				<Route path='/login' component={LoginPage} />
+				<Route path='*' component={NotFoundPage} />
+			</Routes>
+		</Router>
 	);
 };
 
