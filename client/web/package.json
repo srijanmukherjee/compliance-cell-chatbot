@@ -11,7 +11,9 @@
   "license": "MIT",
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.6",
+    "@types/node": "^20.6.3",
     "autoprefixer": "^10.4.16",
+    "daisyui": "^3.7.7",
     "postcss": "^8.4.30",
     "solid-devtools": "^0.27.3",
     "tailwindcss": "^3.3.3",
@@ -20,7 +22,14 @@
     "vite-plugin-solid": "^2.7.0"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.0.2",
     "@solidjs/router": "^0.8.3",
-    "solid-js": "^1.7.6"
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "firebase": "^10.4.0",
+    "lucide-react": "^0.279.0",
+    "solid-js": "^1.7.6",
+    "tailwind-merge": "^1.14.0",
+    "tailwindcss-animate": "^1.0.7"
   }
 }
