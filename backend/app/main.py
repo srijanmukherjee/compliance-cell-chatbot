@@ -1,46 +1,42 @@
 import os
-from fastapi import FastAPI
-from pydantic import BaseModel
-import torch
+from fastapi import Depends, FastAPI
+from app import settings
+from app.dependencies import get_firestore_client
+from app.model.chat import ChatMessage
+from app.model.intent import IntentRepository
+from app.model.model import ModelRepository
+from app.service.chat_service import ChatService
 
-from chatbot.model import NeuralNet
-from chatbot.nltk_utils import bag_of_words, tokenize
+from firebase_admin.firestore import firestore
 
-class ChatMessage(BaseModel):
-    text: str
-    sender: str
+from app.service.model_service import ModelService
 
-app = FastAPI()
+# app = FastAPI()
+model_service = ModelService(
+    settings.APPLICATION_DATA_PATH, 
+    settings.MODEL_INFO_DATA_FILE)
+chat_service = ChatService(model_service)
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-data = torch.load(os.environ.get("CHAT_MODEL_PATH", "data.pth"))
-input_size = data["input_size"]
-hidden_size = data["hidden_size"]
-output_size = data["output_size"]
-all_words = data['all_words']
-tags = data['tags']
-model_state = data["model_state"]
+# chat_model = ChatModel(id='10', storage_id='hello')
+# print(chat_model.model_fields)
+# chat_model.save()
 
-model = NeuralNet(input_size, hidden_size, output_size).to(device)
-model.load_state_dict(model_state)
-model.eval()
+# data = ChatModel.fetch("MT3Wr5ue4mTCKDeAB9s3")
+# if data:
+#     print(data)
 
-@app.get("/")
-async def index():
-    return { "message": "Hello, Mom!" }
+intent = IntentRepository(tag="goodbye", patterns=["Bye", "See you later"], responses=["Have a nice day :-)"])
+intent.save()
 
-@app.post("/chat")
-async def chat(chat_message: ChatMessage):
-    sentence = tokenize(chat_message.text)
-    X = bag_of_words(sentence, all_words)
-    X = X.reshape(1, X.shape[0])
-    X = torch.from_numpy(X).to(device)
+# for model in ModelRepository.fetch_all():
+    # print(model, model._create_time.date())
 
-    output = model(X)
-    _, predicted = torch.max(output, dim=1)
+# @app.get("/")
+# async def index():
+#     return { "message": "Hello from chai ☕ server! " }
 
-    tag = tags[predicted.item()]
-    probs = torch.softmax(output, dim=1)
-    prob = probs[0][int(predicted.item())]
-
-    return {"tag": tag, "probability": prob.item()}
+# @app.post("/chat")
+# async def chat(chat_message: ChatMessage):
+#     # tag, prob = chat_service.generate_response(chat_message)
+#     # return {"tag": tag, "probability": prob}
+#     return None
