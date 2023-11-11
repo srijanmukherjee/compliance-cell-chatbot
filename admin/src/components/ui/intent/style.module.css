@@ -1,0 +1,29 @@
+.list {
+	@apply pl-4;
+}
+
+.list li {
+	@apply hover:bg-secondary transition duration-100 rounded p-2;
+	margin-top: 10px;
+	position: relative;
+	margin-left: calc(32px + 0.5rem);
+}
+
+.list li:before {
+	content: attr(data-index);
+	position: absolute;
+	left: calc(-32px - 0.5rem);
+	top: 0;
+	display: inline-block;
+	width: 32px;
+	@apply bg-secondary rounded inline-flex justify-center items-center p-2 text-sm;
+	line-height: 1.5rem;
+}
+
+.withControls li {
+	@apply p-0 rounded-none flex;
+}
+
+.withControls li > div:first-child {
+	@apply p-2 rounded flex-1;
+}
