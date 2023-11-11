@@ -46,7 +46,7 @@ const links = [
 		icon: <MessageCircle />
 	},
 	{
-		href: "model",
+		href: "/models",
 		title: "Model",
 		icon: <Package />
 	}
@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
 				</nav>
 				<main
 					className={cn(
-						"flex-1 min-h-screen overflow-y-auto transition-all z-0"
+						"flex-1 min-h-screen overflow-y-auto transition-all z-0 flex flex-col"
 					)}>
 					<nav className="p-4 pb-0 text-foreground sticky top-0 bg-background">
 						<div className="bg-secondary rounded-md flex items-center p-4">
