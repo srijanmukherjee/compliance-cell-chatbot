@@ -1,19 +1,20 @@
-import { Table } from "@tanstack/react-table"
+import { Row, Table } from "@tanstack/react-table"
 import MessageTableFacetedFilter from "./message-table-faceted-filter"
-import { MessageState } from "@/models/message"
+import Message, { MessageState } from "@/models/message"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { Button } from "../button"
 import MessageTableViewOptions from "./message-table-view-options"
 import { useEffect, useMemo, useState } from "react"
 
-interface Props<TData> {
-	table: Table<TData>
+interface Props {
+	table: Table<Message>
+	data: Message[]
 }
 
-function generateUniqueOptions<TData>(table: Table<TData>, columnId: string) {
+function generateUniqueOptions(rows: Message[], columnId: string) {
 	const valueSet = new Set<any>()
-	table.getCoreRowModel().rows.forEach((row) => {
-		valueSet.add(row.getValue(columnId))
+	rows.forEach((row: Message) => {
+		valueSet.add((row as any)[columnId])
 	})
 
 	const options: any[] = []
@@ -28,13 +29,13 @@ function generateUniqueOptions<TData>(table: Table<TData>, columnId: string) {
 	return options
 }
 
-export default function MessageTableToolbar<TData>({ table }: Props<TData>) {
+export default function MessageTableToolbar({ table, data }: Props) {
 	const [uniqueTagOptions, setUniqueTagOptions] = useState<any[]>([])
 	const isFiltered = table.getState().columnFilters.length > 0
 
 	useEffect(() => {
-		setUniqueTagOptions(generateUniqueOptions(table, "tag"))
-	}, [table])
+		setUniqueTagOptions(generateUniqueOptions(data, "tag"))
+	}, [data])
 
 	return (
 		<div className="flex items-center justify-between">

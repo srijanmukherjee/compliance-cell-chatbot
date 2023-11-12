@@ -15,6 +15,7 @@ import MessageTableBody from "./message-table-body"
 import { useState } from "react"
 import MessageTablePagination from "./message-table-pagination"
 import MessageTableToolbar from "./message-table-toolbar"
+import Message from "@/models/message"
 
 interface Props<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
@@ -22,11 +23,11 @@ interface Props<TData, TValue> {
 	loading?: boolean
 }
 
-export default function MessagesTable<TData, TValue>({
+export default function MessagesTable<TValue>({
 	columns,
 	data,
 	loading = false
-}: Props<TData, TValue>) {
+}: Props<Message, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([
 		{
 			id: "created_on",
@@ -58,7 +59,7 @@ export default function MessagesTable<TData, TValue>({
 
 	return (
 		<div className="space-y-4">
-			<MessageTableToolbar table={table} />
+			<MessageTableToolbar table={table} data={data} />
 			<div className="rounded-md border">
 				<Table>
 					<TableHeader>
