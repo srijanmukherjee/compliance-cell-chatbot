@@ -155,7 +155,7 @@ export function IntentItemSkeleton() {
 
 export function IntentListSkeleton() {
 	return (
-		<div>
+		<div className="space-y-4">
 			<IntentItemSkeleton />
 			<IntentItemSkeleton />
 			<IntentItemSkeleton />
