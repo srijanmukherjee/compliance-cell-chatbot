@@ -1,42 +1,57 @@
-from enum import Enum
+from datetime import datetime
+from random import choice
+from typing import List, Optional
+
+from loguru import logger
 from app.main import ChatMessage
+from app.model.intent import IntentRepository
+from app.model.message import MessageRepository, MessageState
 from app.service.model_service import ModelService, ModelState
-from chatbot.nltk_utils import bag_of_words, tokenize
 
 class ChatServiceNotLoadedException(Exception):
     pass
 
 class ChatService:
-    def __init__(self, model_service: ModelService):
-        # self.data = torch.load(model_path)
+    def __init__(self, model_service: ModelService, threshold=0.75):
+        self._model_service = model_service
+        self._intents = []
+        self._threshold = threshold
 
-        # input_size = self.data["input_size"]
-        # hidden_size = self.data["hidden_size"]
-        # output_size = self.data["output_size"]
-        # model_state = self.data["model_state"]
-        
-        # self.all_words = self.data['all_words']
-        # self.tags = self.data['tags']
-        # self.model = NeuralNet(input_size, hidden_size, output_size).to(self.device)
-        # self.model.load_state_dict(model_state)
-        # self.model.eval()
-        self.model_service = model_service
+        IntentRepository.watchCollection(self.__handle_intents__)
 
     def generate_response(self, message: ChatMessage):
-        # sentence = tokenize(message.text)
-        # X = bag_of_words(sentence, self.all_words)
-        # X = X.reshape(1, X.shape[0])
-        # X = torch.from_numpy(X).to(self.device)
-
-        # output = self.model(X)
-        # _, predicted = torch.max(output, dim=1)
-
-        # tag = self.tags[predicted.item()]
-        # probs = torch.softmax(output, dim=1)
-        # prob = probs[0][int(predicted.item())]
-
-        # return tag, prob.item()
-        if self.model_service.state == ModelState.NOT_AVAILABLE:
+        if self._model_service.get_state() == ModelState.NOT_AVAILABLE:
             raise ChatServiceNotLoadedException()
         
-        return NotImplemented
+        tag, probability = self._model_service.predict(message.text)
+        state: MessageState = MessageState.BELOW_THRESHOLD
+        response: Optional[str] = None
+
+        if probability > self._threshold:
+            state = MessageState.INTENT_NOT_FOUND
+
+            for intent in self._intents:
+                if intent.tag == tag:
+                    state = MessageState.REPLIED
+                    response = choice(intent.responses)
+            
+        message_log = MessageRepository(
+            text = message.text,
+            uid = message.uid,
+            created_on = datetime.now(),
+            tag = tag,
+            probability = probability,
+            response = response,
+            state = state,
+            threshold = self._threshold
+        )
+        try:
+            message_log.save()
+        except Exception as e:
+            # TODO catch more detailed exception
+            logger.error(f"Failed to save chat message log: {e}")
+
+        return "Sorry I don't understand..." if response is None else response
+    
+    def __handle_intents__(self, intents: List[IntentRepository]):
+        self._intents = intents

@@ -1,10 +1,35 @@
 from abc import ABC
-from typing import List, Optional
+from typing import Callable, List, Optional, Type, TypeVar
 
 from pydantic import BaseModel
 from datetime import datetime
 from app.config.firebase import client
 from firebase_admin.firestore import firestore
+from google.cloud.firestore_v1.watch import Watch, DocumentChange
+from proto.datetime_helpers import DatetimeWithNanoseconds
+
+T = TypeVar('T', bound='FirestoreRepository')
+
+def generate_document_watcher(cls: Type[T], callback: Callable[[T], None]) -> Callable[[List[firestore.DocumentSnapshot], DocumentChange, DatetimeWithNanoseconds], None]:
+    def handler(doc_snapshot: List[firestore.DocumentSnapshot], changes: DocumentChange, read_time: DatetimeWithNanoseconds):
+        if len(doc_snapshot) == 1:
+            document = doc_snapshot[0]
+            data = cls.model_validate(document.to_dict())
+            data._create_time = document.create_time
+            callback(data)
+
+    return handler
+
+def generate_collection_watcher(cls: Type[T], callback: Callable[[List[T]], None]) -> Callable[[List[firestore.DocumentSnapshot], DocumentChange, DatetimeWithNanoseconds], None]:
+    def handler(doc_snapshot: List[firestore.DocumentSnapshot], changes: DocumentChange, read_time: DatetimeWithNanoseconds):
+        documents = []
+        for doc in doc_snapshot:
+            data = cls.model_validate(doc.to_dict())
+            data._create_time = doc.create_time
+            documents.append(data)
+        callback(documents)
+
+    return handler
 
 class FirestoreRepository(BaseModel, ABC):
     _collection_id: Optional[str] = None
@@ -64,14 +89,42 @@ class FirestoreRepository(BaseModel, ABC):
             doc.set(self.model_dump())
             self._create_time = doc.get().create_time
 
+    @classmethod
+    def watchDocument(cls: Type[T], callback: Callable[[T], None], document_id: Optional[str] = None) -> Watch:
+        if cls._collection_id is None:
+            raise Exception("collection_id is not set")
+        
+        if cls._document_id is None:
+            raise Exception("document_id is not set")
+        
+        if document_id is None:
+            document_id = cls._document_id
+        
+        document = client.document(cls._collection_id, document_id)
+        return document.on_snapshot(generate_document_watcher(cls, callback))
+    
+    @classmethod
+    def watchCollection(cls: Type[T], callback: Callable[[List[T]], None]) -> Watch:
+        if cls._collection_id is None:
+            raise Exception("collection_id is not set")
+        
+        collection = client.collection(cls._collection_id)
+        return collection.on_snapshot(generate_collection_watcher(cls, callback))
+
     def document_id(self):
         return self._document_id
     
     def get_create_time(self):
         return self._create_time
 
-def collection(collection_name: str):
+def collection(collection_id: str):
     def apply(cls):
-        cls._collection_id = collection_name
+        cls._collection_id = collection_id
+        return cls
+    return apply
+
+def document(document_id: str):
+    def apply(cls):
+        cls._document_id = document_id
         return cls
     return apply
