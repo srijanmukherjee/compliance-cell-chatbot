@@ -225,6 +225,7 @@ export default function CreateIntentDialog({
 									<Textarea
 										id="response"
 										placeholder="Enter response"
+										className="whitespace-pre"
 										value={responseInput}
 										onChange={(event) =>
 											setResponseInput(

@@ -24,7 +24,10 @@ export const components: Partial<Components> = {
 	},
 	a(props) {
 		return (
-			<Link className="text-primary" href={props.href ?? "#"}>
+			<Link
+				className="text-primary"
+				href={props.href ?? "#"}
+				target="_blank">
 				{props.children}
 			</Link>
 		)
@@ -53,7 +56,11 @@ export const components: Partial<Components> = {
 	},
 
 	th(props) {
-		return <TableHead>{props.children}</TableHead>
+		return (
+			<TableHead className="empty:h-0 empty:p-0">
+				{props.children}
+			</TableHead>
+		)
 	},
 	blockquote(props) {
 		return (
