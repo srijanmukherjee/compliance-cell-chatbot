@@ -14,6 +14,17 @@ import classes from "./style.module.css"
 import { Skeleton } from "../skeleton"
 import { cn } from "@/lib/utils"
 import Markdown from "../markdown"
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger
+} from "../alert-dialog"
 
 interface Props {
 	intent: Intent
@@ -40,7 +51,11 @@ export default function IntentItem({
 			)}
 			suppressHydrationWarning>
 			<div className="flex items-center justify-between space-x-4 bg-secondary px-4 py-2">
-				<h4 className="text-sm font-semibold">{intent.tag}</h4>
+				<CollapsibleTrigger asChild>
+					<h4 className="text-sm font-semibold cursor-pointer select-none">
+						{intent.tag}
+					</h4>
+				</CollapsibleTrigger>
 				<div className="flex items-center gap-2">
 					{onEdit && (
 						<Button
@@ -55,23 +70,42 @@ export default function IntentItem({
 						</Button>
 					)}
 					{onDelete && (
-						<Button
-							variant="secondary"
-							onClick={() => onDelete(intent)}
-							className={cn(
-								classes.controlButton,
-								"text-destructive dark:text-red-500 hover:bg-destructive hover:text-destructive-foreground dark:hover:bg-red-500 dark:hover:text-destructive-foreground"
-							)}
-							size="icon">
-							<Trash2 size="1rem" />
-						</Button>
+						<AlertDialog>
+							<AlertDialogTrigger>
+								<Button
+									variant="secondary"
+									className={cn(
+										classes.controlButton,
+										"text-destructive dark:text-red-500 hover:bg-destructive hover:text-destructive-foreground dark:hover:bg-red-500 dark:hover:text-destructive-foreground"
+									)}
+									size="icon">
+									<Trash2 size="1rem" />
+								</Button>
+							</AlertDialogTrigger>
+							<AlertDialogContent>
+								<AlertDialogHeader>
+									<AlertDialogTitle>
+										Are you sure?
+									</AlertDialogTitle>
+									<AlertDialogDescription>
+										This action cannot be undone. This will
+										permanently delete this intent and may
+										cause previously trained models to miss
+										responses.
+									</AlertDialogDescription>
+								</AlertDialogHeader>
+								<AlertDialogFooter>
+									<AlertDialogCancel>
+										Cancel
+									</AlertDialogCancel>
+									<AlertDialogAction
+										onClick={() => onDelete(intent)}>
+										Continue
+									</AlertDialogAction>
+								</AlertDialogFooter>
+							</AlertDialogContent>
+						</AlertDialog>
 					)}
-					<CollapsibleTrigger asChild>
-						<Button variant="ghost" size="sm" className="w-9 p-0">
-							<ChevronsUpDown className="h-4 w-4" />
-							<span className="sr-only">Toggle</span>
-						</Button>
-					</CollapsibleTrigger>
 				</div>
 			</div>
 
