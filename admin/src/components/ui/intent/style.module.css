@@ -27,12 +27,12 @@
 	@apply p-2 rounded-md flex-1;
 }
 
-.collapsible:hover .deleteButton {
+.collapsible:hover .controlButton {
 	opacity: 1;
 	pointer-events: all;
 }
 
-.deleteButton {
+.controlButton {
 	opacity: 0;
 	transition: opacity 75ms ease-in;
 	pointer-events: none;

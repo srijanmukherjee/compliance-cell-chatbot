@@ -8,7 +8,7 @@ import {
 } from "../collapsible"
 import Intent from "@/models/intent"
 import { Button } from "../button"
-import { ChevronsUpDown, Trash2 } from "lucide-react"
+import { ChevronsUpDown, Edit, Trash2 } from "lucide-react"
 
 import classes from "./style.module.css"
 import { Skeleton } from "../skeleton"
@@ -19,11 +19,13 @@ interface Props {
 	intent: Intent
 	defaultOpen?: boolean
 	onDelete?: (intent: Intent) => void
+	onEdit?: (intent: Intent) => void
 }
 
 export default function IntentItem({
 	intent,
 	onDelete,
+	onEdit,
 	defaultOpen = false
 }: Props) {
 	const [isOpen, setIsOpen] = useState(defaultOpen)
@@ -40,12 +42,24 @@ export default function IntentItem({
 			<div className="flex items-center justify-between space-x-4 bg-secondary px-4 py-2">
 				<h4 className="text-sm font-semibold">{intent.tag}</h4>
 				<div className="flex items-center gap-2">
+					{onEdit && (
+						<Button
+							variant="secondary"
+							onClick={() => onEdit(intent)}
+							className={cn(
+								classes.controlButton,
+								"bg-secondary rounded-r-none hover:rounded-r-md hover:bg-primary"
+							)}
+							size="icon">
+							<Edit size="1rem" />
+						</Button>
+					)}
 					{onDelete && (
 						<Button
 							variant="secondary"
 							onClick={() => onDelete(intent)}
 							className={cn(
-								classes.deleteButton,
+								classes.controlButton,
 								"text-destructive dark:text-red-500 hover:bg-destructive hover:text-destructive-foreground dark:hover:bg-red-500 dark:hover:text-destructive-foreground"
 							)}
 							size="icon">
@@ -167,11 +181,13 @@ export function IntentListSkeleton() {
 export function IntentList({
 	intents,
 	loading,
-	onDelete
+	onDelete,
+	onEdit
 }: {
 	intents?: Intent[]
 	loading: boolean
 	onDelete?: (intent: Intent) => void
+	onEdit?: (intent: Intent) => void
 }) {
 	if (loading) {
 		return <IntentListSkeleton />
@@ -182,6 +198,7 @@ export function IntentList({
 			key={index}
 			defaultOpen
 			onDelete={onDelete}
+			onEdit={onEdit}
 		/>
 	))
 }

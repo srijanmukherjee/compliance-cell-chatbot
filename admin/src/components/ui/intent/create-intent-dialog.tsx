@@ -11,7 +11,7 @@ import {
 } from "../dialog"
 import { Input } from "../input"
 import { Label } from "../label"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import classes from "./style.module.css"
 import { cn } from "@/lib/utils"
@@ -23,17 +23,23 @@ import {
 	AccordionTrigger
 } from "../accordion"
 import Markdown from "../markdown"
+import { UpdateIcon } from "@radix-ui/react-icons"
+import Intent from "@/models/intent"
 
 interface Props {
 	open: boolean
 	onOpenChange: (val: boolean) => void
 	onSubmit: (tag: string, patterns: string[], responses: string[]) => void
+	editMode?: boolean
+	editIntent?: Intent
 }
 
 export default function CreateIntentDialog({
 	open,
 	onOpenChange,
-	onSubmit
+	onSubmit,
+	editMode = false,
+	editIntent
 }: Props) {
 	const [tag, setTag] = useState<string>("")
 	const [patterns, setPatterns] = useState<string[]>([])
@@ -80,14 +86,28 @@ export default function CreateIntentDialog({
 		deleteResponse(index)
 	}
 
+	useEffect(() => {
+		if (editMode && editIntent) {
+			setTag(editIntent.tag)
+			setPatterns(editIntent.patterns)
+			setResponses(editIntent.responses)
+			setPatternInput("")
+			setResponseInput("")
+		}
+	}, [open, editMode, editIntent])
+
 	return (
 		<>
 			<Dialog open={open} onOpenChange={onOpenChange}>
 				<DialogContent className="max-w-3xl overflow-auto max-h-[calc(100vh-theme(margin.10))]">
 					<DialogHeader>
-						<DialogTitle>Create Intent</DialogTitle>
+						<DialogTitle>
+							{editMode ? "Edit" : "Create"} Intent
+						</DialogTitle>
 						<DialogDescription>
-							Add intent for the chatbot to recognise
+							{editMode
+								? "Update existing intent"
+								: "Add intent for the chatbot to recognise"}
 						</DialogDescription>
 					</DialogHeader>
 					<div className="flex items-center space-x-2">
@@ -101,6 +121,7 @@ export default function CreateIntentDialog({
 								onChange={(event) =>
 									setTag(event.currentTarget.value)
 								}
+								disabled={editMode}
 							/>
 						</div>
 					</div>
@@ -248,8 +269,12 @@ export default function CreateIntentDialog({
 								tag.trim() === ""
 							}
 							onClick={() => onSubmit(tag, patterns, responses)}>
-							<Plus className="mr-2" />
-							Create
+							{editMode ? (
+								<UpdateIcon className="mr-2" />
+							) : (
+								<Plus className="mr-2" />
+							)}
+							{editMode ? "Update" : "Create"}
 						</Button>
 					</DialogFooter>
 				</DialogContent>

@@ -25,6 +25,8 @@ export default function Intents() {
 	)
 
 	const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false)
+	const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false)
+	const [editIntent, setEditIntent] = useState<Intent>()
 	const [searchText, setSearchText] = useState<string>("")
 	const [data, setData] = useState<Intent[]>([])
 	const debounceTimerRef = useRef<NodeJS.Timeout | null>()
@@ -39,13 +41,22 @@ export default function Intents() {
 			patterns,
 			responses
 		}
-		IntentService.insertOne(intent).finally(() =>
+		IntentService.insertOne(intent).finally(() => {
 			setCreateDialogOpen(false)
-		)
+			if (editIntent) {
+				setEditDialogOpen(false)
+				setEditIntent(undefined)
+			}
+		})
 	}
 
 	const onDelete = (intent: Intent) => {
 		IntentService.deleteOne(intent)
+	}
+
+	const onEdit = (intent: Intent) => {
+		setEditIntent(intent)
+		setEditDialogOpen(true)
 	}
 
 	useEffect(() => {
@@ -123,12 +134,20 @@ export default function Intents() {
 					intents={data}
 					loading={loading}
 					onDelete={onDelete}
+					onEdit={onEdit}
 				/>
 			</div>
 			<CreateIntentDialog
 				open={createDialogOpen}
 				onOpenChange={setCreateDialogOpen}
 				onSubmit={createIntent}
+			/>
+			<CreateIntentDialog
+				open={editDialogOpen}
+				onOpenChange={setEditDialogOpen}
+				onSubmit={createIntent}
+				editMode
+				editIntent={editIntent}
 			/>
 		</section>
 	)
