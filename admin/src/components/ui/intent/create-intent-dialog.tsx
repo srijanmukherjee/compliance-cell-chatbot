@@ -1,4 +1,4 @@
-import { Plus, Trash } from "lucide-react"
+import { Edit, Plus, Trash } from "lucide-react"
 import { Button } from "../button"
 import {
 	Dialog,
@@ -54,6 +54,12 @@ export default function CreateIntentDialog({
 		})
 	}
 
+	const editPattern = (index: number) => {
+		const pattern = patterns[index]
+		setPatternInput(pattern)
+		deletePattern(index)
+	}
+
 	const addResponse = () => {
 		const value = responseInput.trim()
 		if (value === "") return
@@ -66,6 +72,12 @@ export default function CreateIntentDialog({
 			...values.slice(0, index),
 			...values.slice(index + 1)
 		])
+	}
+
+	const editResponse = (index: number) => {
+		const response = responses[index]
+		setResponseInput(response)
+		deleteResponse(index)
 	}
 
 	return (
@@ -106,13 +118,22 @@ export default function CreateIntentDialog({
 										<div>{pattern}</div>
 										<div>
 											<Button
-												className="text-destructive dark:text-red-500 hover:bg-destructive hover:text-destructive-foreground dark:hover:bg-red-500 dark:hover:text-destructive-foreground"
+												variant="secondary"
+												size="icon"
+												className="bg-secondary rounded-r-none hover:rounded-r-md hover:bg-primary"
+												onClick={() =>
+													editPattern(index)
+												}>
+												<Edit size="1.2rem" />
+											</Button>
+											<Button
+												className="text-destructive dark:text-red-500 hover:bg-destructive hover:text-destructive-foreground dark:hover:bg-red-500 dark:hover:text-destructive-foreground rounded-l-none hover:rounded-l-md"
 												variant="secondary"
 												size="icon"
 												onClick={() =>
 													deletePattern(index)
 												}>
-												<Trash />
+												<Trash size="1.2rem" />
 											</Button>
 										</div>
 									</li>
@@ -156,13 +177,22 @@ export default function CreateIntentDialog({
 										</div>
 										<div>
 											<Button
-												className="text-destructive dark:text-red-500 hover:bg-destructive hover:text-destructive-foreground dark:hover:bg-red-500 dark:hover:text-destructive-foreground"
+												variant="secondary"
+												size="icon"
+												className="bg-secondary rounded-r-none hover:rounded-r-md hover:bg-primary"
+												onClick={() =>
+													editResponse(index)
+												}>
+												<Edit size="1.2rem" />
+											</Button>
+											<Button
+												className="text-destructive dark:text-red-500 hover:bg-destructive hover:text-destructive-foreground dark:hover:bg-red-500 dark:hover:text-destructive-foreground rounded-l-none hover:rounded-l-md"
 												variant="secondary"
 												size="icon"
 												onClick={() =>
 													deleteResponse(index)
 												}>
-												<Trash />
+												<Trash size="1.2rem" />
 											</Button>
 										</div>
 									</li>

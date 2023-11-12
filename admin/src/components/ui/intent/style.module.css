@@ -3,7 +3,7 @@
 }
 
 .list > li {
-	@apply hover:bg-secondary transition duration-100 rounded p-2;
+	@apply hover:bg-secondary transition duration-100 p-2 rounded-md;
 	margin-top: 10px;
 	position: relative;
 	margin-left: calc(32px + 0.5rem);
@@ -15,17 +15,16 @@
 	position: absolute;
 	left: calc(-32px - 0.5rem);
 	top: 0;
-	display: inline-block;
 	width: 32px;
 	line-height: 1.5rem;
 }
 
 .withControls > li {
-	@apply p-0 rounded-none flex;
+	@apply p-0 rounded-md flex;
 }
 
 .withControls > li > div:first-child {
-	@apply p-2 rounded flex-1;
+	@apply p-2 rounded-md flex-1;
 }
 
 .collapsible:hover .deleteButton {
