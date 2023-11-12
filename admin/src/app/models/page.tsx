@@ -6,10 +6,11 @@ import { useWatchResource } from "@/hooks/useResource"
 import { TrainingStatus } from "@/models/chatbot-model"
 import ModelService from "@/services/model-service"
 import { DownloadCloud, Loader2 } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import dayjs from "dayjs"
-import { Timestamp, serverTimestamp } from "firebase/firestore"
 import Link from "next/link"
+import { storage } from "@/config/firebase"
+import { getDownloadURL, ref } from "firebase/storage"
 
 function reprModelStatus(status: TrainingStatus) {
 	if (status === TrainingStatus.INIT) return "Initialized"
@@ -21,10 +22,16 @@ export default function Models() {
 		ModelService.watchFetchModel
 	)
 
-	const downloadModel = () => {
-		if (model === undefined) return
-		alert("Not Implemented")
-	}
+	const [downloadUrl, setDownloadUrl] = useState<string | undefined>()
+
+	useEffect(() => {
+		if (model === undefined || model.storageLocation === null) return
+		setDownloadUrl(undefined)
+		const modelRef = ref(storage, model.storageLocation)
+		getDownloadURL(modelRef).then((url) => {
+			setDownloadUrl(url)
+		})
+	}, [model])
 
 	// TODO: handle error
 	useEffect(() => {
@@ -66,11 +73,15 @@ export default function Models() {
 				</Button>
 				<Button
 					variant="outline"
-					className="gap-4 select-none"
-					onClick={() => downloadModel()}
-					disabled={model.status !== TrainingStatus.TRAINED}>
-					<DownloadCloud size="1.3rem" />
-					Download Model
+					className="select-none p-0"
+					disabled={
+						model.status !== TrainingStatus.TRAINED &&
+						downloadUrl !== undefined
+					}>
+					<Link href={downloadUrl ?? "#"} className="flex gap-4 p-4">
+						<DownloadCloud size="1.3rem" />
+						Download Model
+					</Link>
 				</Button>
 			</div>
 			<div className="flex gap-2 items-center">
@@ -92,7 +103,7 @@ export default function Models() {
 			<div className="grid gap-2">
 				<Label className="font-bold">Build log</Label>
 				<pre
-					className="p-4 rounded-sm"
+					className="p-4 rounded-sm whitespace-pre-wrap break-words"
 					style={{ backgroundColor: "hsl(var(--secondary) / 60%)" }}>
 					{model.buildLog || "-- no build log --"}
 				</pre>

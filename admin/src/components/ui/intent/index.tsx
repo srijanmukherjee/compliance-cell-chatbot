@@ -8,33 +8,56 @@ import {
 } from "../collapsible"
 import Intent from "@/models/intent"
 import { Button } from "../button"
-import { ChevronsUpDown } from "lucide-react"
+import { ChevronsUpDown, Trash2 } from "lucide-react"
 
 import classes from "./style.module.css"
 import { Skeleton } from "../skeleton"
+import { cn } from "@/lib/utils"
 
 interface Props {
 	intent: Intent
 	defaultOpen?: boolean
+	onDelete?: (intent: Intent) => void
 }
 
-export default function IntentItem({ intent, defaultOpen = false }: Props) {
+export default function IntentItem({
+	intent,
+	onDelete,
+	defaultOpen = false
+}: Props) {
 	const [isOpen, setIsOpen] = useState(defaultOpen)
 
 	return (
 		<Collapsible
 			open={isOpen}
 			onOpenChange={setIsOpen}
-			className="transition-all shadow-lg rounded-lg overflow-hidden"
+			className={cn(
+				"transition-all shadow-lg rounded-lg overflow-hidden",
+				classes.collapsible
+			)}
 			suppressHydrationWarning>
 			<div className="flex items-center justify-between space-x-4 bg-secondary px-4 py-2">
 				<h4 className="text-sm font-semibold">{intent.tag}</h4>
-				<CollapsibleTrigger asChild>
-					<Button variant="ghost" size="sm" className="w-9 p-0">
-						<ChevronsUpDown className="h-4 w-4" />
-						<span className="sr-only">Toggle</span>
-					</Button>
-				</CollapsibleTrigger>
+				<div className="flex items-center gap-2">
+					{onDelete && (
+						<Button
+							variant="secondary"
+							onClick={() => onDelete(intent)}
+							className={cn(
+								classes.deleteButton,
+								"text-destructive dark:text-red-500 hover:bg-destructive hover:text-destructive-foreground dark:hover:bg-red-500 dark:hover:text-destructive-foreground"
+							)}
+							size="icon">
+							<Trash2 size="1rem" />
+						</Button>
+					)}
+					<CollapsibleTrigger asChild>
+						<Button variant="ghost" size="sm" className="w-9 p-0">
+							<ChevronsUpDown className="h-4 w-4" />
+							<span className="sr-only">Toggle</span>
+						</Button>
+					</CollapsibleTrigger>
+				</div>
 			</div>
 
 			<CollapsibleContent
@@ -142,15 +165,22 @@ export function IntentListSkeleton() {
 
 export function IntentList({
 	intents,
-	loading
+	loading,
+	onDelete
 }: {
 	intents?: Intent[]
 	loading: boolean
+	onDelete?: (intent: Intent) => void
 }) {
 	if (loading) {
 		return <IntentListSkeleton />
 	}
 	return intents?.map((intent, index) => (
-		<IntentItem intent={intent} key={index} defaultOpen />
+		<IntentItem
+			intent={intent}
+			key={index}
+			defaultOpen
+			onDelete={onDelete}
+		/>
 	))
 }

@@ -28,6 +28,7 @@ import { ThemeProvider } from "../provider/theme-provider"
 import ThemeToggleButton from "../ui/theme-toggle-button"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Toaster } from "../ui/toaster"
 
 const links = [
 	{
@@ -157,6 +158,7 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
 					</nav>
 					<div className={cn("flex-1 p-4")}>{children}</div>
 				</main>
+				<Toaster />
 			</div>
 		</ThemeProvider>
 	)

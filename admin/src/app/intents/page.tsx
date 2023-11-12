@@ -9,10 +9,12 @@ import IntentService from "@/services/intent-service"
 import { Import, Plus } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Intent from "@/models/intent"
+import { useToast } from "@/components/ui/use-toast"
 
 const SEARCH_DEBOUNCE_TIME = 500
 
 export default function Intents() {
+	const { toast } = useToast()
 	const [loading, error, intents] = useWatchResource(
 		IntentService.watchFetchAll
 	)
@@ -35,6 +37,10 @@ export default function Intents() {
 		IntentService.insertOne(intent).finally(() =>
 			setCreateDialogOpen(false)
 		)
+	}
+
+	const onDelete = (intent: Intent) => {
+		IntentService.deleteOne(intent)
 	}
 
 	useEffect(() => {
@@ -70,7 +76,15 @@ export default function Intents() {
 					<Plus className="mr-2" />
 					Create
 				</Button>
-				<Button variant="outline">
+				<Button
+					variant="outline"
+					onClick={() => {
+						toast({
+							title: "Not Implemented",
+							description:
+								"This feature has not yet been implemented."
+						})
+					}}>
 					<Import className="mr-2" />
 					Import
 				</Button>
@@ -88,7 +102,11 @@ export default function Intents() {
 			<div
 				className="flex flex-col gap-4"
 				suppressHydrationWarning={true}>
-				<IntentList intents={data} loading={loading} />
+				<IntentList
+					intents={data}
+					loading={loading}
+					onDelete={onDelete}
+				/>
 			</div>
 			<CreateIntentDialog
 				open={createDialogOpen}

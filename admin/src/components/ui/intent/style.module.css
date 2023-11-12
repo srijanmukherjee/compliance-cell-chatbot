@@ -10,13 +10,13 @@
 }
 
 .list li:before {
+	@apply bg-secondary rounded inline-flex justify-center items-center p-2 text-sm;
 	content: attr(data-index);
 	position: absolute;
 	left: calc(-32px - 0.5rem);
 	top: 0;
 	display: inline-block;
 	width: 32px;
-	@apply bg-secondary rounded inline-flex justify-center items-center p-2 text-sm;
 	line-height: 1.5rem;
 }
 
@@ -26,4 +26,15 @@
 
 .withControls li > div:first-child {
 	@apply p-2 rounded flex-1;
+}
+
+.collapsible:hover .deleteButton {
+	opacity: 1;
+	pointer-events: all;
+}
+
+.deleteButton {
+	opacity: 0;
+	transition: opacity 75ms ease-in;
+	pointer-events: none;
 }
