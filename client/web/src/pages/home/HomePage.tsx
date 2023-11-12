@@ -1,11 +1,29 @@
 import { authState } from "@/store/authStore";
 import { Component, For, createSignal } from "solid-js";
 
+import Logo from "@/components/Logo";
 import { RendererObject, marked } from "marked";
 
 const renderer: RendererObject = {
 	list(body, ordered, start) {
-		return `<ul class="pl-4 list-disc">${body}</ul>`;
+		const tag = ordered ? "ol" : "ul";
+		return `<${tag} class="pl-4 list-disc">${body}</${tag}>`;
+	},
+	table(header, body) {
+		return `<table class="table">
+			<thead class="text-white">
+			${header}
+			</thead>
+			<tbody>
+			${body}
+			</tbody>
+		</table>`;
+	},
+	tablerow(content) {
+		return `<tr class="empty:h-0">${content}</tr>`;
+	},
+	link(href, title, text) {
+		return `<a href="${href}" target="_blank" class="text-secondary underline">${text}</a>`;
 	},
 };
 
@@ -22,8 +40,13 @@ const HomePage: Component = () => {
 		const msg = message();
 		setChat((prev) => [...prev, { message: msg, target: "me" }]);
 
+		chatarea?.scroll({
+			top: chatarea.scrollHeight,
+			behavior: "smooth",
+		});
+
 		setTimeout(() => {
-			fetch("http://127.0.0.1:8000/chat", {
+			fetch(`${import.meta.env.VITE_CHAT_SERVER_URL}/chat`, {
 				method: "POST",
 				body: JSON.stringify({
 					text: msg,
@@ -53,10 +76,18 @@ const HomePage: Component = () => {
 			<div class='flex flex-col sm:max-w-screen-lg flex-grow p-4 gap-y-6'>
 				{/* Chat area */}
 				<div
-					class='flex-grow h-20 overflow-auto'
+					class='flex-grow h-20 overflow-auto flex'
 					ref={chatarea}>
-					<div class='w-full'>
-						<For each={chat()}>
+					<div class={"w-full flex-1" + (chat().length === 0 ? " flex" : "")}>
+						<For
+							each={chat()}
+							fallback={
+								<div class='flex-1 flex flex-col justify-center items-center'>
+									<div class='text-gray-300 text-2xl flex gap-2 items-center'>
+										<Logo /> is brewing
+									</div>
+								</div>
+							}>
 							{({ message, target }) => (
 								<div
 									class='chat'
