@@ -10,6 +10,11 @@ import { Import, Plus } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Intent from "@/models/intent"
 import { useToast } from "@/components/ui/use-toast"
+import {
+	IconFileExport,
+	IconPackageExport,
+	IconTableExport
+} from "@tabler/icons-react"
 
 const SEARCH_DEBOUNCE_TIME = 500
 
@@ -85,8 +90,20 @@ export default function Intents() {
 								"This feature has not yet been implemented."
 						})
 					}}>
-					<Import className="mr-2" />
+					<Import className="mr-2" size="1.2rem" />
 					Import
+				</Button>
+				<Button
+					variant="outline"
+					onClick={() => {
+						toast({
+							title: "Not Implemented",
+							description:
+								"This feature has not yet been implemented."
+						})
+					}}>
+					<IconFileExport className="mr-2" size="1.2rem" />
+					Export
 				</Button>
 				<Input
 					placeholder="Search intents"
