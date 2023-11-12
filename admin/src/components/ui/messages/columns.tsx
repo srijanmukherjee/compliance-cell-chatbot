@@ -73,9 +73,21 @@ export const columns: ColumnDef<Message>[] = [
 			const state: MessageState = row.getValue("state")
 			if (state === MessageState.REPLIED) return <Badge>Replied</Badge>
 			else if (state === MessageState.BELOW_THRESHOLD)
-				return <Badge variant="destructive">Below threshold</Badge>
+				return (
+					<Badge
+						variant="destructive"
+						className="break-keep whitespace-pre">
+						Below threshold
+					</Badge>
+				)
 			else if (state === MessageState.INTENT_NOT_FOUND)
-				return <Badge variant="destructive">Intent not found</Badge>
+				return (
+					<Badge
+						variant="destructive"
+						className="break-keep whitespace-pre">
+						Intent not found
+					</Badge>
+				)
 			return state
 		},
 		filterFn: (row, id, value) => {
