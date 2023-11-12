@@ -1,4 +1,15 @@
+import { authState } from "@/store/authStore";
 import { Component, For, createSignal } from "solid-js";
+
+import { RendererObject, marked } from "marked";
+
+const renderer: RendererObject = {
+	list(body, ordered, start) {
+		return `<ul class="pl-4 list-disc">${body}</ul>`;
+	},
+};
+
+marked.use({ renderer });
 
 const HomePage: Component = () => {
 	const [chat, setChat] = createSignal<{ message: string; target: "me" | "bot" }[]>([]);
@@ -12,16 +23,18 @@ const HomePage: Component = () => {
 		setChat((prev) => [...prev, { message: msg, target: "me" }]);
 
 		setTimeout(() => {
-			fetch("http://127.0.0.1:5000/chat", {
+			fetch("http://127.0.0.1:8000/chat", {
 				method: "POST",
 				body: JSON.stringify({
-					message: msg,
+					text: msg,
+					uid: authState().user?.uid ?? "anonymous",
 				}),
 				headers: {
 					"Content-Type": "application/json",
 				},
 			})
-				.then((res) => res.text())
+				.then((res) => res.json())
+				.then((res) => res.response)
 				.then((reply) => {
 					setChat((prev) => [...prev, { message: reply, target: "bot" }]);
 
@@ -52,11 +65,11 @@ const HomePage: Component = () => {
 										"chat-end": target === "me",
 									}}>
 									<div
-										class='chat-bubble text-white'
+										class='chat-bubble text-white p-4'
 										classList={{
 											"chat-bubble-primary": target === "me",
 										}}>
-										{message}
+										{target === "me" ? message : <div innerHTML={marked.parse(message)} />}
 									</div>
 								</div>
 							)}
