@@ -2,7 +2,7 @@
 
 # load environment variables from .env.local file
 set -a
-source .env.local
+source ./.env.local
 set +a
 
 export GOOGLE_APPLICATION_CREDENTIALS=credentials.json
