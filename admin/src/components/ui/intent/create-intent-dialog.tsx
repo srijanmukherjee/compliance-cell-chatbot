@@ -11,10 +11,18 @@ import {
 } from "../dialog"
 import { Input } from "../input"
 import { Label } from "../label"
-import { useRef, useState } from "react"
+import { useState } from "react"
 
 import classes from "./style.module.css"
 import { cn } from "@/lib/utils"
+import { Textarea } from "../textarea"
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger
+} from "../accordion"
+import Markdown from "../markdown"
 
 interface Props {
 	open: boolean
@@ -143,7 +151,9 @@ export default function CreateIntentDialog({
 								)}>
 								{responses.map((response, index) => (
 									<li key={index} data-index={index}>
-										<div>{response}</div>
+										<div>
+											<Markdown content={response} />
+										</div>
 										<div>
 											<Button
 												className="text-destructive dark:text-red-500 hover:bg-destructive hover:text-destructive-foreground dark:hover:bg-red-500 dark:hover:text-destructive-foreground"
@@ -159,24 +169,38 @@ export default function CreateIntentDialog({
 								))}
 							</ol>
 
-							<div className="flex items-center gap-2">
-								<Input
-									id="response"
-									placeholder="Enter response"
-									type="text"
-									value={responseInput}
-									onChange={(event) =>
-										setResponseInput(
-											event.currentTarget.value
-										)
-									}
-								/>
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={addResponse}>
-									Add
-								</Button>
+							<div className="space-y-4">
+								<div className="flex items-center gap-2">
+									<Textarea
+										id="response"
+										placeholder="Enter response"
+										value={responseInput}
+										onChange={(event) =>
+											setResponseInput(
+												event.currentTarget.value
+											)
+										}
+									/>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={addResponse}>
+										Add
+									</Button>
+								</div>
+								<Accordion
+									type="single"
+									collapsible
+									className="w-full">
+									<AccordionItem value="preview">
+										<AccordionTrigger>
+											Preview
+										</AccordionTrigger>
+										<AccordionContent>
+											<Markdown content={responseInput} />
+										</AccordionContent>
+									</AccordionItem>
+								</Accordion>
 							</div>
 						</div>
 					</div>

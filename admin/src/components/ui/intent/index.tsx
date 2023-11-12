@@ -13,6 +13,7 @@ import { ChevronsUpDown, Trash2 } from "lucide-react"
 import classes from "./style.module.css"
 import { Skeleton } from "../skeleton"
 import { cn } from "@/lib/utils"
+import Markdown from "../markdown"
 
 interface Props {
 	intent: Intent
@@ -85,7 +86,7 @@ export default function IntentItem({
 						<ol className={classes.list}>
 							{intent.responses.map((response, index) => (
 								<li key={index} data-index={index}>
-									{response}
+									<Markdown content={response} />
 								</li>
 							))}
 						</ol>
