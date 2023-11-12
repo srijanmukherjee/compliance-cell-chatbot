@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import MessageTableColumnHeader from "./message-table-column-header"
 import dayjs from "dayjs"
 import { Badge } from "../badge"
+import Markdown from "../markdown"
 
 const today = new Date()
 
@@ -43,6 +44,9 @@ export const columns: ColumnDef<Message>[] = [
 	},
 	{
 		accessorKey: "probability",
+		accessorFn: (row, index) => {
+			return parseFloat(row.probability).toFixed(3)
+		},
 		header: ({ column }) => (
 			<MessageTableColumnHeader column={column} title="Probability" />
 		)
@@ -51,6 +55,13 @@ export const columns: ColumnDef<Message>[] = [
 		accessorKey: "response",
 		header: ({ column }) => (
 			<MessageTableColumnHeader column={column} title="Response" />
+		),
+		cell: ({ row }) => (
+			<div className="max-h-32 max-w-2xl overflow-hidden hover:overflow-auto">
+				<Markdown
+					content={row.getValue("response") ?? "-- no content --"}
+				/>
+			</div>
 		)
 	},
 	{
