@@ -8,6 +8,23 @@ import { Navigate, useNavigate } from "@solidjs/router";
 import { FirestoreError } from "firebase/firestore";
 import { Component, createEffect, createSignal } from "solid-js";
 
+function getInitialSemester(email: string | null) {
+	if (email === null) return 1;
+	const id = email.split("@")[0];
+	if (Number.isNaN(Number(id)) || id.length < 4) {
+		return 1;
+	}
+
+	const startYear = parseInt(id.substring(0, 2));
+	const startDate = new Date(`01/10/20${startYear}`);
+	const date = new Date();
+	let months = (date.getFullYear() - startDate.getFullYear()) * 12;
+	months -= startDate.getMonth();
+	months += date.getMonth();
+	const semester = Math.floor(months / 6);
+	return semester > 8 ? 1 : semester;
+}
+
 interface FormError {
 	firstName?: string;
 	lastName?: string;
@@ -26,7 +43,7 @@ const OnboardingPage: Component = () => {
 	const [formError, setFormError] = createSignal<FormError>({});
 	const [firstName, setFirstName] = createSignal(user.displayName?.split(" ")[0] ?? "");
 	const [branch, setBranch] = createSignal("cse");
-	const [semester, setSemester] = createSignal(1);
+	const [semester, setSemester] = createSignal(getInitialSemester(user.email));
 	const [lastName, setLastName] = createSignal(user.displayName?.substring(user.displayName.indexOf(" ") + 1) ?? "");
 	const [disabledInput, setDisabledInput] = createSignal(false);
 	const [loading, setLoading] = createSignal(false);
