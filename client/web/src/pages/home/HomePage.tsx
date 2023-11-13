@@ -1,7 +1,8 @@
 import { authState } from "@/store/authStore";
-import { Component, For, createSignal } from "solid-js";
+import { Component, For, createMemo, createSignal } from "solid-js";
 
 import Logo from "@/components/Logo";
+import { auth } from "@/service/auth";
 import { RendererObject, marked } from "marked";
 
 const renderer: RendererObject = {
@@ -32,10 +33,23 @@ marked.use({ renderer });
 const HomePage: Component = () => {
 	const [chat, setChat] = createSignal<{ message: string; target: "me" | "bot" }[]>([]);
 	const [message, setMessage] = createSignal("");
+	const idToken = createMemo(async () => {
+		const { loaded, user } = authState();
+		if (!loaded || !user) return undefined;
+		try {
+			return await auth.currentUser?.getIdToken();
+		} catch (error) {
+			if (import.meta.env.DEV) console.error(error);
+		}
+		return undefined;
+	});
 	let chatarea: HTMLDivElement | undefined = undefined;
 
-	const sendMessage = () => {
+	const sendMessage = async () => {
 		if (message().length === 0) return;
+
+		const token = await idToken();
+		if (!token) return;
 
 		const msg = message();
 		setChat((prev) => [...prev, { message: msg, target: "me" }]);
@@ -50,7 +64,7 @@ const HomePage: Component = () => {
 				method: "POST",
 				body: JSON.stringify({
 					text: msg,
-					uid: authState().user?.uid ?? "anonymous",
+					token,
 				}),
 				headers: {
 					"Content-Type": "application/json",
@@ -60,7 +74,7 @@ const HomePage: Component = () => {
 				.then((res) => res.json())
 				.then((res) => res.response)
 				.then((reply) => {
-					setChat((prev) => [...prev, { message: reply, target: "bot" }]);
+					if (reply) setChat((prev) => [...prev, { message: reply, target: "bot" }]);
 
 					chatarea?.scroll({
 						top: chatarea.scrollHeight,
@@ -101,7 +115,7 @@ const HomePage: Component = () => {
 										classList={{
 											"chat-bubble-primary": target === "me",
 										}}>
-										{target === "me" ? message : <div innerHTML={marked.parse(message)} />}
+										{target === "me" ? message : <div innerHTML={marked.parse(message ?? "")} />}
 									</div>
 								</div>
 							)}
@@ -124,7 +138,8 @@ const HomePage: Component = () => {
 					<button
 						type='button'
 						class='btn transition duration-500 ease-in-out btn-primary'
-						onClick={sendMessage}>
+						onClick={sendMessage}
+						disabled={idToken() === undefined}>
 						<span class='font-bold'>Send</span>
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
