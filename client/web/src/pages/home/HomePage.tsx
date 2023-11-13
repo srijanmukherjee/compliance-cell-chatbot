@@ -11,14 +11,17 @@ const renderer: RendererObject = {
 		return `<${tag} class="pl-4 list-disc">${body}</${tag}>`;
 	},
 	table(header, body) {
-		return `<table class="table">
-			<thead class="text-white">
-			${header}
-			</thead>
-			<tbody>
-			${body}
-			</tbody>
-		</table>`;
+		return `
+		<div class="overflow-x-auto">
+			<table class="table">
+				<thead class="text-white">
+					${header}
+				</thead>
+				<tbody>
+					${body}
+				</tbody>
+			</table>
+		</div>`;
 	},
 	tablerow(content) {
 		return `<tr class="empty:h-0">${content}</tr>`;
