@@ -59,6 +59,26 @@ export default function Intents() {
 		setEditDialogOpen(true)
 	}
 
+	const exportIntents = () => {
+		const data = {
+			intents
+		}
+
+		const content = JSON.stringify(data, null, 4)
+		const blob = new Blob([content], {
+			type: "application/json"
+		})
+		const url = URL.createObjectURL(blob)
+		const aTag = document.createElement("a")
+		aTag.style.display = "none"
+		document.body.appendChild(aTag)
+		aTag.href = url
+		aTag.download = "intents.json"
+		aTag.click()
+		aTag.remove()
+		URL.revokeObjectURL(url)
+	}
+
 	useEffect(() => {
 		if (!intents) return
 		if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
@@ -104,15 +124,7 @@ export default function Intents() {
 					<Import className="mr-2" size="1.2rem" />
 					Import
 				</Button>
-				<Button
-					variant="outline"
-					onClick={() => {
-						toast({
-							title: "Not Implemented",
-							description:
-								"This feature has not yet been implemented."
-						})
-					}}>
+				<Button variant="outline" onClick={exportIntents}>
 					<IconFileExport className="mr-2" size="1.2rem" />
 					Export
 				</Button>
