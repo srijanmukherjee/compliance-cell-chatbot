@@ -61,12 +61,5 @@ export const components: Partial<Components> = {
 				{props.children}
 			</TableHead>
 		)
-	},
-	blockquote(props) {
-		return (
-			<blockquote className="p-6 border-l-4 border-l-secondary my-4">
-				{props.children}
-			</blockquote>
-		)
 	}
 }
