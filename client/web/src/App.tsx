@@ -48,6 +48,7 @@ const App: Component = () => {
 			} else {
 				// 500 error
 			}
+
 			console.log(error);
 		}
 
