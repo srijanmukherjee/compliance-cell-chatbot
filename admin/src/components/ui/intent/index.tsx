@@ -71,7 +71,7 @@ export default function IntentItem({
 					)}
 					{onDelete && (
 						<AlertDialog>
-							<AlertDialogTrigger>
+							<AlertDialogTrigger asChild>
 								<Button
 									variant="secondary"
 									className={cn(
