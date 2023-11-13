@@ -1,6 +1,6 @@
 import { Route, Routes, useLocation, useNavigate } from "@solidjs/router";
 import { User } from "firebase/auth";
-import { Show, createEffect, createSignal, onMount, type Component } from "solid-js";
+import { Show, createEffect, createSignal, type Component } from "solid-js";
 import Navbar from "./components/Navbar";
 import NotFoundPage from "./pages/errors/NotFoundPage";
 import HomePage from "./pages/home/HomePage";
@@ -34,9 +34,9 @@ const App: Component = () => {
 	const [loaded, setLoaded] = createSignal(false);
 
 	const loadProfile = async (user: User | undefined) => {
+		// user is not logged in, so dont load profile
 		if (user === undefined) {
-			setLoaded(true);
-			return;
+			return true;
 		}
 
 		try {
@@ -44,33 +44,48 @@ const App: Component = () => {
 			setAuthState((prev) => ({ ...prev, profile }));
 		} catch (error) {
 			if (error instanceof ProfileNotFoundException) {
-				console.log(location.pathname);
-				if (location.pathname !== "/onboarding") navigate("/onboarding");
+				if (location.pathname !== "/onboarding") {
+					navigate("/onboarding");
+					return false;
+				}
 			} else {
 				// 500 error
 			}
 		}
 
-		setLoaded(true);
+		return true;
 	};
 
-	onMount(() => {
-		auth.onAuthStateChanged((user) => {
-			setAuthState((prev) => ({ ...prev, loaded: true, user: user === null ? undefined : user }));
+	createEffect(() => {
+		return auth.onAuthStateChanged((user) => {
+			setAuthState((prev) => ({ ...prev, loaded: true, user: user ?? undefined }));
 		});
 	});
 
 	createEffect(() => {
 		const { loaded: userLoaded, user, profile } = authState();
-		if (location.pathname !== "/login" && userLoaded && user === undefined) {
+		if (!userLoaded) return;
+		if (user && !profile) setLoaded(false);
+
+		// user is not logged in but accessing protected routes
+		if (location.pathname !== "/login" && user === undefined) {
 			let url = "/login";
+
+			// return back to this url after logging in
 			if (location.pathname !== "/") url += "?to=" + encodeURI(location.pathname);
+
+			// go to login page
 			navigate(url);
 		}
+		if (user === undefined) setLoaded(true);
+		else {
+			loadProfile(user).then(setLoaded);
+		}
+	});
 
-		if (loaded()) return;
-		if (userLoaded) loadProfile(user);
-		// setLoaded(true);
+	createEffect(() => {
+		const { loaded: userLoaded, user, profile } = authState();
+		if (!userLoaded) return;
 	});
 
 	return (
