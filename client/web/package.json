@@ -27,8 +27,10 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "firebase": "^10.4.0",
+    "katex": "^0.16.9",
     "lucide-react": "^0.279.0",
     "marked": "^10.0.0",
+    "marked-katex-extension": "^4.0.4",
     "solid-js": "^1.7.6",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7"

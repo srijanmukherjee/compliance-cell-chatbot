@@ -20,12 +20,18 @@ dependencies:
   firebase:
     specifier: ^10.4.0
     version: 10.4.0
+  katex:
+    specifier: ^0.16.9
+    version: 0.16.9
   lucide-react:
     specifier: ^0.279.0
     version: 0.279.0(react@18.2.0)
   marked:
     specifier: ^10.0.0
     version: 10.0.0
+  marked-katex-extension:
+    specifier: ^4.0.4
+    version: 4.0.4(marked@10.0.0)
   solid-js:
     specifier: ^1.7.6
     version: 1.7.6
@@ -1437,6 +1443,10 @@ packages:
       '@babel/types': 7.22.5
     dev: true
 
+  /@types/katex@0.16.6:
+    resolution: {integrity: sha512-rZYO1HInM99rAFYNwGqbYPxHZHxu2IwZYKj4bJ4oh6edVrm1UId8mmbHIZLBtG253qU6y3piag0XYe/joNnwzQ==}
+    dev: false
+
   /@types/node@20.6.3:
     resolution: {integrity: sha512-HksnYH4Ljr4VQgEy2lTStbCKv/P590tmPe5HqOnv9Gprffgv5WXAY+Y5Gqniu0GGqeTCUdBnzC3QSrzPkBkAMA==}
 
@@ -1634,6 +1644,11 @@ packages:
   /commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
+
+  /commander@8.3.0:
+    resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
+    engines: {node: '>= 12'}
+    dev: false
 
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -1949,6 +1964,13 @@ packages:
     hasBin: true
     dev: true
 
+  /katex@0.16.9:
+    resolution: {integrity: sha512-fsSYjWS0EEOwvy81j3vRA8TEAhQhKiqO+FQaKWp0m39qwOzHVBgAUBIXWj1pB+O2W3fIpNa6Y9KSKCVbfPhyAQ==}
+    hasBin: true
+    dependencies:
+      commander: 8.3.0
+    dev: false
+
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
@@ -1983,6 +2005,16 @@ packages:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /marked-katex-extension@4.0.4(marked@10.0.0):
+    resolution: {integrity: sha512-QIFVHKsjKFlWGLPRbq2JoNSQXhmrtjUb9viXWzTqLoJk+E2yJ7AG5n2PUTxjwe8plHekEkxxriy6AEdHzT5gLA==}
+    peerDependencies:
+      marked: '>=4 <11'
+    dependencies:
+      '@types/katex': 0.16.6
+      katex: 0.16.9
+      marked: 10.0.0
     dev: false
 
   /marked@10.0.0:

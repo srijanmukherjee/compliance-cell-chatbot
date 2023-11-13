@@ -4,6 +4,7 @@ import { Component, For, createMemo, createSignal } from "solid-js";
 import Logo from "@/components/Logo";
 import { auth } from "@/service/auth";
 import { RendererObject, marked } from "marked";
+import markedKatex from "marked-katex-extension";
 
 const renderer: RendererObject = {
 	list(body, ordered, start) {
@@ -32,6 +33,7 @@ const renderer: RendererObject = {
 };
 
 marked.use({ renderer });
+marked.use(markedKatex());
 
 const HomePage: Component = () => {
 	const [chat, setChat] = createSignal<{ message: string; target: "me" | "bot" }[]>([]);
