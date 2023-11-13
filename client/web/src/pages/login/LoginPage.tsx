@@ -21,7 +21,6 @@ export default function LoginPage() {
 		setGoogleLoading(true);
 		await googleSignin()
 			.then((userCredential) => {
-				alert(location.query);
 				navigate(location.query.to ?? "/");
 			})
 			.catch((reason) => {

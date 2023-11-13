@@ -178,7 +178,7 @@ const OnboardingPage: Component = () => {
 						<select
 							class='select select-bordered w-full'
 							value={semester()}
-							onSelect={(event) => setSemester(parseInt(event.currentTarget.value))}
+							onChange={(event) => setSemester(parseInt(event.currentTarget.value))}
 							id='semester'>
 							<option value='1'>1st</option>
 							<option value='2'>2nd</option>

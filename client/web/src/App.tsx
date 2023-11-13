@@ -44,12 +44,11 @@ const App: Component = () => {
 			setAuthState((prev) => ({ ...prev, profile }));
 		} catch (error) {
 			if (error instanceof ProfileNotFoundException) {
+				console.log(location.pathname);
 				if (location.pathname !== "/onboarding") navigate("/onboarding");
 			} else {
 				// 500 error
 			}
-
-			console.log(error);
 		}
 
 		setLoaded(true);
