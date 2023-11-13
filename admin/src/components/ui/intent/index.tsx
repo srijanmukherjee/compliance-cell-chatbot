@@ -230,7 +230,7 @@ export function IntentList({
 		<IntentItem
 			intent={intent}
 			key={index}
-			defaultOpen
+			defaultOpen={index < 4}
 			onDelete={onDelete}
 			onEdit={onEdit}
 		/>

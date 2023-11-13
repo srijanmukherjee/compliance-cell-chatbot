@@ -107,7 +107,7 @@ export default function Intents() {
 
 	return (
 		<section className="flex flex-col gap-4">
-			<div className="flex gap-4 py-4">
+			<div className="flex gap-4 py-4 flex-wrap">
 				<Button onClick={() => setCreateDialogOpen(true)}>
 					<Plus className="mr-2" />
 					Create
@@ -120,11 +120,15 @@ export default function Intents() {
 							description:
 								"This feature has not yet been implemented."
 						})
-					}}>
+					}}
+					disabled={loading}>
 					<Import className="mr-2" size="1.2rem" />
 					Import
 				</Button>
-				<Button variant="outline" onClick={exportIntents}>
+				<Button
+					variant="outline"
+					onClick={exportIntents}
+					disabled={loading}>
 					<IconFileExport className="mr-2" size="1.2rem" />
 					Export
 				</Button>
