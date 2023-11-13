@@ -1,13 +1,13 @@
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
-import DashboardLayout from "@/components/layout/dashboard-layout"
+
+import { Inter } from "next/font/google"
+import { InitializerWithProvider } from "./initializer"
+import { Metadata } from "next"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-	title: "Chatbot Administration",
-	description: "Manage and administrate chai chatbot"
+	title: "Chatbot Administration"
 }
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={inter.className}>
-				<DashboardLayout>{children}</DashboardLayout>
+				<InitializerWithProvider>{children}</InitializerWithProvider>
 			</body>
 		</html>
 	)

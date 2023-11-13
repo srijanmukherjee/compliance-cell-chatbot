@@ -29,6 +29,8 @@ import ThemeToggleButton from "../ui/theme-toggle-button"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Toaster } from "../ui/toaster"
+import { signOut } from "firebase/auth"
+import { auth } from "@/config/firebase"
 
 const links = [
 	{
@@ -147,7 +149,8 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
 											</DropdownMenuItem>
 										</DropdownMenuGroup>
 										<DropdownMenuSeparator />
-										<DropdownMenuItem>
+										<DropdownMenuItem
+											onClick={() => signOut(auth)}>
 											<LogOut className="mr-2 h-4 w-4" />
 											<span>Log out</span>
 										</DropdownMenuItem>
