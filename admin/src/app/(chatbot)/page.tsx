@@ -32,32 +32,32 @@ function getFrequency(messages: Message[]) {
 
 export default function Home() {
 	const [loading, error, messages] = useWatchResource(
-		MessageService.watchFetchAll
+		MessageService.watchFetchLatest
 	)
-	const [frequencyPerMinute, setFrequencyPerMinute] = useState<number>(0)
-	const frequencyUpdateTimer = useRef<NodeJS.Timeout>()
+	// const [frequencyPerMinute, setFrequencyPerMinute] = useState<number>(0)
+	// const frequencyUpdateTimer = useRef<NodeJS.Timeout>()
 
-	useEffect(() => {
-		if (loading || !messages || messages.length === 0) return
+	// useEffect(() => {
+	// 	if (loading || !messages || messages.length === 0) return
 
-		if (frequencyUpdateTimer.current)
-			clearTimeout(frequencyUpdateTimer.current)
+	// 	if (frequencyUpdateTimer.current)
+	// 		clearTimeout(frequencyUpdateTimer.current)
 
-		setFrequencyPerMinute(getFrequency(messages))
+	// 	setFrequencyPerMinute(getFrequency(messages))
 
-		frequencyUpdateTimer.current = setTimeout(() => {
-			setFrequencyPerMinute(getFrequency(messages))
-		}, 60000)
+	// 	frequencyUpdateTimer.current = setTimeout(() => {
+	// 		setFrequencyPerMinute(getFrequency(messages))
+	// 	}, 60000)
 
-		return () => {
-			if (frequencyUpdateTimer.current)
-				clearTimeout(frequencyUpdateTimer.current)
-		}
-	}, [loading, messages])
+	// 	return () => {
+	// 		if (frequencyUpdateTimer.current)
+	// 			clearTimeout(frequencyUpdateTimer.current)
+	// 	}
+	// }, [loading, messages])
 
 	return (
 		<main className="space-y-2">
-			<section>
+			{/* <section>
 				<header className="py-4">
 					<h2 className="font-semibold text-2xl">Stats</h2>
 				</header>
@@ -76,7 +76,7 @@ export default function Home() {
 						hint={"Total number of messages"}
 					/>
 				</div>
-			</section>
+			</section> */}
 
 			<section>
 				<header className="py-4">
