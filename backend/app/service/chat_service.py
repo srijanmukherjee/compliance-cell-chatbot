@@ -1,21 +1,23 @@
-from datetime import datetime
 from random import choice
+import threading
 from typing import List, Optional
 
-from loguru import logger
 from app.main import ChatMessage
 from app.model.intent import IntentRepository
-from app.model.message import MessageRepository, MessageState
+from app.model.message import MessageState
+from app.service.logger_service import LoggerService
 from app.service.model_service import ModelService, ModelState
 
 class ChatServiceNotLoadedException(Exception):
     pass
 
 class ChatService:
-    def __init__(self, model_service: ModelService, threshold=0.75):
+    def __init__(self, model_service: ModelService, threshold=0.75, logger_service: LoggerService = LoggerService()):
         self._model_service = model_service
+        self._logger_service = logger_service
         self._intents = []
         self._threshold = threshold
+        self._intents_lock = threading.Lock()
 
         IntentRepository.watchCollection(self.__handle_intents__)
 
@@ -30,28 +32,24 @@ class ChatService:
         if probability > self._threshold:
             state = MessageState.INTENT_NOT_FOUND
 
-            for intent in self._intents:
-                if intent.tag == tag:
-                    state = MessageState.REPLIED
-                    response = choice(intent.responses)
-            
-        message_log = MessageRepository(
-            text = message.text,
-            uid = message.uid,
-            created_on = datetime.now(),
-            tag = tag,
-            probability = probability,
-            response = response,
-            state = state,
-            threshold = self._threshold
+            with self._intents_lock:
+                for intent in self._intents:
+                    if intent.tag == tag:
+                        state = MessageState.REPLIED
+                        response = choice(intent.responses)
+
+        self._logger_service.log_chat(
+            message.text,
+            message._uid,
+            tag,
+            probability,
+            response,
+            state,
+            self._threshold
         )
-        try:
-            message_log.save()
-        except Exception as e:
-            # TODO catch more detailed exception
-            logger.error(f"Failed to save chat message log: {e}")
 
         return "Sorry I don't understand..." if response is None else response
     
     def __handle_intents__(self, intents: List[IntentRepository]):
-        self._intents = intents
+        with self._intents_lock:
+            self._intents = intents

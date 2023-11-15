@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 
 
 class ChatMessage(BaseModel):
     text: str
-    uid: str
+    token: str
+    _uid: str = PrivateAttr(default=None)
