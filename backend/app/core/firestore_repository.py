@@ -1,17 +1,17 @@
 from abc import ABC
-from typing import Callable, List, Optional, Type, TypeVar
+from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
 
 from pydantic import BaseModel
 from datetime import datetime
 from app.config.firebase import client
 from firebase_admin.firestore import firestore
-from google.cloud.firestore_v1.watch import Watch, DocumentChange
+from google.cloud.firestore_v1.watch import Watch, DocumentChange, ChangeType
 from proto.datetime_helpers import DatetimeWithNanoseconds
 
 T = TypeVar('T', bound='FirestoreRepository')
 
-def generate_document_watcher(cls: Type[T], callback: Callable[[T], None]) -> Callable[[List[firestore.DocumentSnapshot], DocumentChange, DatetimeWithNanoseconds], None]:
-    def handler(doc_snapshot: List[firestore.DocumentSnapshot], changes: DocumentChange, read_time: DatetimeWithNanoseconds):
+def generate_document_watcher(cls: Type[T], callback: Callable[[T], None]) -> Callable[[List[firestore.DocumentSnapshot], List[DocumentChange], DatetimeWithNanoseconds], None]:
+    def handler(doc_snapshot: List[firestore.DocumentSnapshot], changes: List[DocumentChange], read_time: DatetimeWithNanoseconds):
         if len(doc_snapshot) == 1:
             document = doc_snapshot[0]
             data = cls.model_validate(document.to_dict())
@@ -20,14 +20,32 @@ def generate_document_watcher(cls: Type[T], callback: Callable[[T], None]) -> Ca
 
     return handler
 
-def generate_collection_watcher(cls: Type[T], callback: Callable[[List[T]], None]) -> Callable[[List[firestore.DocumentSnapshot], DocumentChange, DatetimeWithNanoseconds], None]:
-    def handler(doc_snapshot: List[firestore.DocumentSnapshot], changes: DocumentChange, read_time: DatetimeWithNanoseconds):
-        documents = []
-        for doc in doc_snapshot:
-            data = cls.model_validate(doc.to_dict())
-            data._create_time = doc.create_time
-            documents.append(data)
-        callback(documents)
+def generate_collection_watcher(cls: Type[T], callback: Callable[[List[T]], None]) -> Callable[[List[firestore.DocumentSnapshot], List[DocumentChange], DatetimeWithNanoseconds], None]:
+    documents_cache: Dict[str, T] = {}
+    def handler(doc_snapshot: List[firestore.DocumentSnapshot], changes: List[DocumentChange], read_time: DatetimeWithNanoseconds):
+        reads = 0
+        for docChange in changes:
+            if docChange.type == ChangeType.ADDED:
+                docSnapshot: firestore.DocumentSnapshot = docChange.document
+                docId = docSnapshot.id
+                if docId in documents_cache:
+                    continue
+                data = cls.model_validate(docSnapshot.to_dict())
+                data._create_time = docSnapshot.create_time
+                documents_cache[docId] = data
+                reads += 1
+            elif docChange.type == ChangeType.MODIFIED:
+                docSnapshot: firestore.DocumentSnapshot = docChange.document
+                docId = docSnapshot.id
+                data = cls.model_validate(docSnapshot.to_dict())
+                data._create_time = docSnapshot.create_time
+                documents_cache[docId] = data
+                reads += 1
+            else:
+                docSnapshot: firestore.DocumentSnapshot = docChange.document
+                docId = docSnapshot.id
+                documents_cache.pop(docId)
+        callback(list(documents_cache.values()))
 
     return handler
 

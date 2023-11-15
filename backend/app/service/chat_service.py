@@ -19,7 +19,10 @@ class ChatService:
         self._threshold = threshold
         self._intents_lock = threading.Lock()
 
-        IntentRepository.watchCollection(self.__handle_intents__)
+        self.watcher = IntentRepository.watchCollection(self.__handle_intents__)
+
+    def __del__(self):
+        self.watcher.unsubscribe()
 
     def generate_response(self, message: ChatMessage):
         if self._model_service.get_state() == ModelState.NOT_AVAILABLE:

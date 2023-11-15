@@ -29,7 +29,10 @@ class ModelService:
         self._tags: Any
         self._all_words: Any
         
-        ChatbotModelRepository.watchDocument(self.handle_model)
+        self.watcher = ChatbotModelRepository.watchDocument(self.handle_model)
+
+    def __del__(self):
+        self.watcher.unsubscribe()
     
     def get_model(self) -> nn.Module:
         if self._model is None:
