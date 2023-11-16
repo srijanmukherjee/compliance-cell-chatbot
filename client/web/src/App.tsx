@@ -78,8 +78,10 @@ const App: Component = () => {
 			navigate(url);
 		}
 		if (user === undefined) setLoaded(true);
-		else {
+		else if (!profile) {
 			loadProfile(user).then(setLoaded);
+		} else {
+			setLoaded(true);
 		}
 	});
 
