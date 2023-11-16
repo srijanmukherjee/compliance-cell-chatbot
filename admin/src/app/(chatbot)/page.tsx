@@ -1,15 +1,13 @@
 "use client"
 
 import CountCard from "@/components/count-card"
-import { Button } from "@/components/ui/button"
 import MessagesTable from "@/components/ui/messages"
 import { columns } from "@/components/ui/messages/columns"
 import { useWatchResource } from "@/hooks/useResource"
 import Message from "@/models/message"
 import MessageService from "@/services/message-service"
-import { IconNumber } from "@tabler/icons-react"
 import { Activity, MessageCircle } from "lucide-react"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 function utc(datetime: Date) {
 	return datetime.getTime() + datetime.getTimezoneOffset() * 60000
@@ -32,32 +30,32 @@ function getFrequency(messages: Message[]) {
 
 export default function Home() {
 	const [loading, error, messages] = useWatchResource(
-		MessageService.watchFetchLatest
+		MessageService.watchFetchAll
 	)
-	// const [frequencyPerMinute, setFrequencyPerMinute] = useState<number>(0)
-	// const frequencyUpdateTimer = useRef<NodeJS.Timeout>()
+	const [frequencyPerMinute, setFrequencyPerMinute] = useState<number>(0)
+	const frequencyUpdateTimer = useRef<NodeJS.Timeout>()
 
-	// useEffect(() => {
-	// 	if (loading || !messages || messages.length === 0) return
+	useEffect(() => {
+		if (loading || !messages || messages.length === 0) return
 
-	// 	if (frequencyUpdateTimer.current)
-	// 		clearTimeout(frequencyUpdateTimer.current)
+		if (frequencyUpdateTimer.current)
+			clearTimeout(frequencyUpdateTimer.current)
 
-	// 	setFrequencyPerMinute(getFrequency(messages))
+		setFrequencyPerMinute(getFrequency(messages))
 
-	// 	frequencyUpdateTimer.current = setTimeout(() => {
-	// 		setFrequencyPerMinute(getFrequency(messages))
-	// 	}, 60000)
+		frequencyUpdateTimer.current = setTimeout(() => {
+			setFrequencyPerMinute(getFrequency(messages))
+		}, 60000)
 
-	// 	return () => {
-	// 		if (frequencyUpdateTimer.current)
-	// 			clearTimeout(frequencyUpdateTimer.current)
-	// 	}
-	// }, [loading, messages])
+		return () => {
+			if (frequencyUpdateTimer.current)
+				clearTimeout(frequencyUpdateTimer.current)
+		}
+	}, [loading, messages])
 
 	return (
 		<main className="space-y-2">
-			{/* <section>
+			<section>
 				<header className="py-4">
 					<h2 className="font-semibold text-2xl">Stats</h2>
 				</header>
@@ -76,7 +74,7 @@ export default function Home() {
 						hint={"Total number of messages"}
 					/>
 				</div>
-			</section> */}
+			</section>
 
 			<section>
 				<header className="py-4">
